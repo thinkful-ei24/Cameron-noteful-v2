@@ -84,7 +84,7 @@ router.put('/:id', (req, res, next) => {
   }
   let noteId;
   knex('notes')
-    .update({title: updateObj.title, content: updateObj.content, folder_id: updateObj.folderId})
+    .update({title: updateObj.title, content: updateObj.content, folder_id: (updateObj.folderId) ? (updateObj.folderId): null})
     .where({id})
     .returning('id')
     .then(([id]) => {
@@ -106,7 +106,7 @@ router.put('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
   const { title, content, folderId } = req.body;
 
-  const newItem = { title, content, folder_id: folderId };
+  const newItem = { title, content, folder_id: (folderId) ? folderId : null};
   /***** Never trust users - validate input *****/
   if (!newItem.title) {
     const err = new Error('Missing `title` in request body');
