@@ -68,7 +68,7 @@ router.get('/:id', (req, res, next) => {
   const id = req.params.id;
   returnById(id)
     .then(results => {
-      if(results){
+      if(results.length !== 0){
         const hydrated = hydrateNotes(results);
         res.json(hydrated[0]);
       } else{
@@ -104,8 +104,7 @@ router.put('/:id', (req, res, next) => {
   knex('notes')
     .update({title: updateObj.title, content: updateObj.content, folder_id: (updateObj.folderId) ? (updateObj.folderId): null})
     .where({id})
-    .returning('id')
-    .then(([id]) => {
+    .then(() => {
       noteId = id;
       return knex('notes_tags').del().where({note_id: noteId});
     })
@@ -115,7 +114,7 @@ router.put('/:id', (req, res, next) => {
     })
     .then(() => returnById(noteId))
     .then((result) => {
-      if (result){
+      if (result.length !== 0){
         const hydrate = hydrateNotes(result)[0];
         res.status(200).json(hydrate);
       } else {
